@@ -1,6 +1,7 @@
 import React from 'react';
 
-import PageHeader from '../../components/PageHeader'
+import PageHeader from '../../components/PageHeader';
+import TeacherItem from '../../components/TeacherItem';
 
 import './stylees.css';
 
@@ -24,7 +25,14 @@ function TecherList(){
                        <input type="text" id="time"/>
                    </div>
                </form>
-           </PageHeader>     
+           </PageHeader>    
+
+           <main>
+               <TeacherItem />
+               <TeacherItem />
+               <TeacherItem />
+               <TeacherItem />
+           </main> 
         </div>
     )
 }
