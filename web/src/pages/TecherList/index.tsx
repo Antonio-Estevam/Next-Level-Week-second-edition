@@ -1,20 +1,43 @@
-import React from 'react';
+import React, {useState, FormEvent} from 'react';
 
 import PageHeader from '../../components/PageHeader';
-import TeacherItem from '../../components/TeacherItem';
+import TeacherItem, {Teacher} from '../../components/TeacherItem';
 import Input from '../../components/Input';
 import Select from '../../components/Select';
+import api from '../../services/api';
 
 import './stylees.css';
 
 function TecherList(){
+    const [teachers, setTechers] = useState([]);
+
+    const [subject, setSubject] = useState('');
+    const [wek_day, seteWek_day] = useState('');
+    const [time, setTime] = useState('');
+
+    async function searchTeachers(e: FormEvent){
+        e.preventDefault();
+
+        const response = await api.get('clases', {
+           params:{
+            subject,
+            wek_day,
+            time,
+         }
+        }); 
+
+        setTechers(response.data); 
+    }
+
     return(
         <div id="page-techer-list" className="conteiner">
            <PageHeader title="Estes são os proffs disponiveis.">
-               <form id="search-teachers">
+               <form id="search-teachers" onSubmit={searchTeachers}>
                <Select
                      name="subject"
                      label="Matéria"
+                     value={subject}
+                     onChange={(e) => {setSubject(e.target.value)}}
                      options={[
                          { value: 'Artes', label:'Artes'},
                          { value: 'Biologia', label:'Biologia'},
@@ -30,8 +53,10 @@ function TecherList(){
                     />
 
                     <Select
-                     name="week-day"
+                     name="wek-day"
                      label="Dia da semana"
+                     value={wek_day}
+                     onChange={(e) => {seteWek_day(e.target.value)}}
                      options={[
                          { value: '0', label:'Domingo'},
                          { value: '1', label:'Segunda-feira'},
@@ -42,15 +67,26 @@ function TecherList(){
                          { value: '6', label:'Sábado'}
                      ]}
                     />
-                   <Input name="time" label="Hora" type='time'/>
+                   <Input 
+                        name="time" 
+                        label="Hora" 
+                        type='time'
+                        value={time}
+                        onChange={(e) => {
+                         setTime(e.target.value);
+                        }}
+                    />
+
+                    <button type="submit" onClick={searchTeachers}>
+                        Buscar 
+                    </button>
                </form>
            </PageHeader>    
 
            <main>
-               <TeacherItem />
-               <TeacherItem />
-               <TeacherItem />
-               <TeacherItem />
+               {teachers.map((teacher: Teacher)=>{
+                   return <TeacherItem key={teacher.id} techer={teacher} />
+               })}
            </main> 
         </div>
     )

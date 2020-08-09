@@ -26,6 +26,24 @@ export default class ClassesController {
         const timeInMinutes = convertHourToMinutes(time);
 
         const classes = await db('clases')
+            .whereExists(function(){
+                this.select('clases_schedule.*')
+                    .from('clases_schedule')
+                    .whereRaw('`clases_schedule`.`class_id` = `clases`.`id`')
+                    .whereRaw('`clases_schedule`.`wek_day` = ??', [Number(wek_day)])
+                    .whereRaw('`clases_schedule`.`from` <= ??', [timeInMinutes])
+                    .whereRaw('`clases_schedule`.`to` > ??', [timeInMinutes])
+            })
+            .where('clases.subject', '=', subject)
+            .join('users', 'clases.user_id', '=', 'users.id')
+            .select(['clases.*', 'users.*']);
+            
+        return response.json(classes);
+
+
+
+         /*
+        const classes = await db('clases')
             .whereExists( function (){
                 this.select('clases_schedule.*')
                 .from('clases_schedule')
@@ -34,11 +52,13 @@ export default class ClassesController {
                 .whereRaw('`clases_schedule`.`from` <= ??',[timeInMinutes])
                 .whereRaw('`clases_schedule`.`to` > ??',[timeInMinutes]);
             })
-            .where('clases.subject', '=',subject)
+            .where('clases.subject', '=', subject)
             .join('users', 'clases.user_id', '=', 'user_id')
             .select(['clases.*', 'users.*']);
+            
 
-        response.json(classes);
+        return response.json(classes); 
+        */     
         
     }
 

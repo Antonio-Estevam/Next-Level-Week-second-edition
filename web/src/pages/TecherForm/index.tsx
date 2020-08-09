@@ -1,4 +1,5 @@
 import React, {useState, FormEvent} from 'react';
+import {useHistory} from 'react-router-dom'
 import PageHeader from '../../components/PageHeader';
 import Input from '../../components/Input';
 import Textarea from '../../components/Textarea';
@@ -8,6 +9,8 @@ import './styles.css';
 import api from '../../services/api';
 
 function TecherForm(){
+    const history = useHistory();
+
     const [name, setName] = useState('');
     const [avatar, setAvatar] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
@@ -27,18 +30,35 @@ function TecherForm(){
         ]);        
     }
 
+    function setScheduleItemsValue(position:number, field: string, value:string){
+        const updatedScheduleItems = scheduleItems.map((scheduleItem, index) => {
+            if (index === position){
+                return {...scheduleItem,[field]: value};
+            }
+
+            return scheduleItem;
+        });
+        setScheduleItems(updatedScheduleItems);
+        
+    }
+
     function handleCreateClass(e: FormEvent){
         e.preventDefault();
 
-        console.log({
+        api.post('clases',{
             name,
             avatar,
             whatsapp,
             bio,
             subject,
-            cost
-        });
-        
+            cost: Number(cost),
+            schedule:scheduleItems
+        }).then(() => {
+            alert("Cadastro realizado com sucesso");
+            history.push('/');
+        }).catch((erro) => {
+            alert('Erro no cadastro '+erro);
+        });       
 
     }
 
@@ -125,9 +145,10 @@ function TecherForm(){
                             return (
                                 <div key={scheduleItem.wek_day} className="schedule-item">
                                 <Select
-                                name="week-day"
+                                name="wek_day"
                                 label="Dia da semana"
-                                onChange={e => setScheduleItemsValue(index, '')}
+                                value={scheduleItem.wek_day}
+                                onChange={e => setScheduleItemsValue(index, 'wek_day',e.target.value)}
                                 options={[
                                     { value: '0', label:'Domingo'},
                                     { value: '1', label:'Segunda-feira'},
@@ -139,8 +160,21 @@ function TecherForm(){
                                 ]}
                             />
         
-                            <Input name="from" label="Das" type="time"/>
-                            <Input name="to" label="Até" type="time"/>
+                            <Input
+                              name="from"
+                              label="Das"
+                              type="time"
+                              value={scheduleItem.from}
+                              onChange={e => setScheduleItemsValue(index, 'from',e.target.value)}
+                            />
+
+                            <Input
+                              name="to"
+                              label="Até"
+                              type="time"
+                              value={scheduleItem.to}
+                              onChange={e => setScheduleItemsValue(index, 'to',e.target.value)}
+                            />
                                 </div>
                             );
                         })}
