@@ -17,7 +17,6 @@ function TecherList(){
 
     async function searchTeachers(e: FormEvent){
         e.preventDefault();
-
         const response = await api.get('clases', {
            params:{
             subject,

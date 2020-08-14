@@ -17,7 +17,7 @@ function TeacherList() {
   const [isFiltersVisible, setIsFiltersVisible] = useState(false);
 
   const [subject, setSubject] = useState("");
-  const [wek_day, setWeekDay] = useState("");
+  const [wek_day, setWekDay] = useState("");
   const [time, setTime] = useState("");
 
   function loadFavorites() {
@@ -46,13 +46,14 @@ function TeacherList() {
   async function handleFiltersSubmit() {
     loadFavorites();
 
-    const response = await api.get("clases", {
-      params: {
-        subject,
-        wek_day,
-        time,
-      },
-    });
+    const response = await api.get('clases', {
+           params:{
+            subject,
+            wek_day,
+            time,
+         }
+        }); 
+        
     setIsFiltersVisible(false);
     setTeachers(response.data);
   }
@@ -84,7 +85,7 @@ function TeacherList() {
                 <TextInput
                   style={styles.input}
                   value={wek_day}
-                  onChangeText={(text) => setWeekDay(text)}
+                  onChangeText={(text) => setWekDay(text)}
                   placeholder="Qual o dia?"
                   placeholderTextColor="#c1bccc"
                 />
